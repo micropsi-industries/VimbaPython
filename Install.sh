@@ -117,15 +117,15 @@ function get_python_versions
             continue
         fi
 
-        # 3) Remove incompatible versions (<3.7)
+        # 3) Remove incompatible versions (<3.6)
         # patch is ignored but has to be parsed in case the binary name contains it
         FILENAME=$(basename -- "$P")
         read -r MAJOR MINOR PATCH < <(echo $FILENAME | tr -dc "0-9." | tr "." " ")
-        if [ $MAJOR -gt 3 ] || { [ $MAJOR -eq 3 ] && [ $MINOR -ge 7 ]; }; then
+        if [ $MAJOR -gt 3 ] || { [ $MAJOR -eq 3 ] && [ $MINOR -ge 6 ]; }; then
             : # the interperter is compatible
         else
             if [ "$DEBUG" = true ] ; then
-                echo "$P is not compatible. VimbaPython requires python >=3.7" >&2
+                echo "$P is not compatible. VimbaPython requires python >=3.6" >&2
             fi
             continue
         fi
