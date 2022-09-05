@@ -1,0 +1,9 @@
+# Virtual environment
+/.venv/
+
+# Build artefacts
+/build/lib/vimba/
+/VimbaPython.egg-info/
+
+# IDE configuration
+/.idea/
