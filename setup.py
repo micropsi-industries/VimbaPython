@@ -53,7 +53,7 @@ packages = [
     'vimba.c_binding',
     'vimba.util'
 ]
-python_requires = '>=3.7'
+python_requires = '>=3.6'
 tests_require = [
     'xmlrunner',
     'flake8',
