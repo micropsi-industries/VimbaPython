@@ -4,6 +4,7 @@
 # Build artefacts
 /build/lib/vimba/
 /VimbaPython.egg-info/
+**/__pycache__/
 
 # IDE configuration
 /.idea/
