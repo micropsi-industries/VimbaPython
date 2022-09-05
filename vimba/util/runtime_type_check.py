@@ -26,6 +26,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 import collections.abc
+import sys
 
 from inspect import isfunction, ismethod, signature
 from functools import wraps
@@ -36,6 +37,17 @@ from .log import Log
 __all__ = [
     'RuntimeTypeCheckEnable'
 ]
+
+
+def runtime_typecheck_supported() -> bool:
+    version_info = sys.version_info
+    if version_info.major < 3:
+        return False
+
+    if version_info.major == 3 and version_info.minor < 7:
+        return False
+
+    return True
 
 
 class RuntimeTypeCheckEnable:
@@ -49,17 +61,27 @@ class RuntimeTypeCheckEnable:
     """
     _log = Log.get_instance()
 
-    def __call__(self, func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            full_args, hints = self.__dismantle_sig(func, *args, **kwargs)
+    # MICROPSI HACK: statically disable runtime typechecking if python version < 3.7
+    if runtime_typecheck_supported():
+        def __call__(self, func):
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                full_args, hints = self.__dismantle_sig(func, *args, **kwargs)
 
-            for arg_name in hints:
-                self.__verify_arg(func, hints[arg_name], (arg_name, full_args[arg_name]))
+                for arg_name in hints:
+                    self.__verify_arg(func, hints[arg_name], (arg_name, full_args[arg_name]))
 
-            return func(*args, **kwargs)
+                return func(*args, **kwargs)
 
-        return wrapper
+            return wrapper
+    else:
+        def __call__(self, func):
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                return func(*args, **kwargs)
+
+            return wrapper
+    # END MICROPSI HACK
 
     def __dismantle_sig(self, func, *args, **kwargs):
         # Get merge args, kwargs and defaults to complete argument list.
